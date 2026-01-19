@@ -1,10 +1,8 @@
 import OfferCard from '../../components/offer-card/offer-card';
 
-interface MainPageProps {
-  placesCount: number;
-}
+function MainPage(): JSX.Element {
+  const placesCount = 312;
 
-function MainPage({ placesCount }: MainPageProps): JSX.Element {
   return (
     <div className="page page--gray page--main">
       <header className="header">

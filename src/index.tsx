@@ -6,6 +6,6 @@ const root = createRoot(document.getElementById('root')!);
 
 root.render(
   <StrictMode>
-    <App placesCount={312} />
+    <App />
   </StrictMode>
 );
