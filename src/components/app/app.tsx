@@ -5,19 +5,25 @@ import FavoritesPage from '../../pages/favorites-page/favorites-page';
 import OfferPage from '../../pages/offer-page/offer-page';
 import NotFoundPage from '../../pages/not-found-page/not-found-page';
 import PrivateRoute from '../private-route/private-route';
+import { Offer, Review } from '../../types';
 
-function App(): JSX.Element {
+interface AppProps {
+  offers: Offer[];
+  reviews: Review[];
+}
+
+function App({ offers, reviews }: AppProps): JSX.Element {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<MainPage />} />
+        <Route path="/" element={<MainPage offers={offers} />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/favorites" element={
           <PrivateRoute>
-            <FavoritesPage />
+            <FavoritesPage offers={offers} />
           </PrivateRoute>
         } />
-        <Route path="/offer/:id" element={<OfferPage />} />
+        <Route path="/offer/:id" element={<OfferPage offers={offers} reviews={reviews} />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

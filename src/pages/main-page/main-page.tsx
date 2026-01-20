@@ -1,7 +1,12 @@
-import OfferCard from '../../components/offer-card/offer-card';
+import { Offer } from '../../types';
+import OfferList from '../../components/offer-list/offer-list';
 
-function MainPage(): JSX.Element {
-  const placesCount = 312;
+interface MainPageProps {
+  offers: Offer[];
+}
+
+function MainPage({ offers }: MainPageProps): JSX.Element {
+  const placesCount = offers.length;
 
   return (
     <div className="page page--gray page--main">
@@ -92,13 +97,7 @@ function MainPage(): JSX.Element {
                   <li className="places__option" tabIndex={0}>Top rated first</li>
                 </ul>
               </form>
-              <div className="cities__places-list places__list tabs__content">
-                <OfferCard />
-                <OfferCard />
-                <OfferCard />
-                <OfferCard />
-                <OfferCard />
-              </div>
+              <OfferList offers={offers} />
             </section>
             <div className="cities__right-section">
               <section className="cities__map map"></section>
