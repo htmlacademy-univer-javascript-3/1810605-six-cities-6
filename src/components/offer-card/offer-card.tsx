@@ -5,12 +5,22 @@ interface OfferCardProps {
   offer: Offer;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  className?: string;
+  variant?: 'cities' | 'near-places';
 }
 
-function OfferCard({ offer, onMouseEnter, onMouseLeave }: OfferCardProps): JSX.Element {
+function OfferCard({
+  offer,
+  onMouseEnter,
+  onMouseLeave,
+  className,
+  variant = 'cities'
+}: OfferCardProps): JSX.Element {
+  const isNearPlaces = variant === 'near-places';
+
   return (
     <article
-      className="cities__card place-card"
+      className={className ?? (isNearPlaces ? 'near-places__card place-card' : 'cities__card place-card')}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
@@ -19,9 +29,15 @@ function OfferCard({ offer, onMouseEnter, onMouseLeave }: OfferCardProps): JSX.E
           <span>Premium</span>
         </div>
       )}
-      <div className="cities__image-wrapper place-card__image-wrapper">
+      <div className={`${isNearPlaces ? 'near-places__image-wrapper' : 'cities__image-wrapper'} place-card__image-wrapper`}>
         <Link to={`/offer/${offer.id}`}>
-          <img className="place-card__image" src={offer.previewImage} width="260" height="200" alt="Place image" />
+          <img
+            className="place-card__image"
+            src={offer.previewImage}
+            width={isNearPlaces ? 260 : 260}
+            height={isNearPlaces ? 200 : 200}
+            alt="Place image"
+          />
         </Link>
       </div>
       <div className="place-card__info">

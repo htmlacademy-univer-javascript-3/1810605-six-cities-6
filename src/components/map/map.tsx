@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Icon, Marker, layerGroup } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { City, Offer } from '../../types';
+import { City, Location, Offer } from '../../types';
 import useMap from '../../hooks/use-map';
 
 const defaultCustomIcon = new Icon({
@@ -16,21 +16,47 @@ const currentCustomIcon = new Icon({
   iconAnchor: [13.5, 39]
 });
 
+type MapPoint = {
+  id: string;
+  location: Location;
+};
+
 interface MapProps {
   city: City;
-  offers: Offer[];
-  selectedOffer: Offer | undefined;
+  points?: MapPoint[] | Offer[];
+  offers?: Offer[];
+  selectedPointId?: string;
+  activePointId?: string;
+  selectedOffer?: Offer | undefined;
+  className?: string;
 }
 
-function Map({ city, offers, selectedOffer }: MapProps): JSX.Element {
+function Map({
+  city,
+  points,
+  offers,
+  selectedPointId,
+  activePointId,
+  selectedOffer,
+  className
+}: MapProps): JSX.Element {
   const mapRef = useRef(null);
   const map = useMap(mapRef, city);
 
   useEffect(() => {
     if (map) {
       const markerLayer = layerGroup().addTo(map);
+      const pointsToRender = (points ?? offers ?? []).map((point) => ({
+        id: point.id,
+        location: point.location
+      }));
+      const highlightedIds = new Set(
+        [activePointId, selectedPointId, selectedOffer?.id].filter(
+          (value): value is string => Boolean(value)
+        )
+      );
 
-      offers.forEach((offer) => {
+      pointsToRender.forEach((offer) => {
         const marker = new Marker({
           lat: offer.location.latitude,
           lng: offer.location.longitude
@@ -38,7 +64,7 @@ function Map({ city, offers, selectedOffer }: MapProps): JSX.Element {
 
         marker
           .setIcon(
-            selectedOffer !== undefined && offer.id === selectedOffer.id
+            highlightedIds.has(offer.id)
               ? currentCustomIcon
               : defaultCustomIcon
           )
@@ -49,10 +75,10 @@ function Map({ city, offers, selectedOffer }: MapProps): JSX.Element {
         map.removeLayer(markerLayer);
       };
     }
-  }, [map, offers, selectedOffer]);
+  }, [map, points, offers, selectedPointId, activePointId, selectedOffer]);
 
   return (
-    <section className="cities__map map">
+    <section className={className ?? 'cities__map map'}>
       <div style={{ height: '100%' }} ref={mapRef}></div>
     </section>
   );
