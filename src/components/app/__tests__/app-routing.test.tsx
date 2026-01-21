@@ -24,6 +24,7 @@ vi.mock('react-router-dom', async () => {
 vi.mock('../../../store/api-actions', () => ({
   checkAuthAction: () => ({ type: 'checkAuth' }),
   fetchOffersAction: () => ({ type: 'fetchOffers' }),
+  fetchFavoritesAction: () => ({ type: 'fetchFavorites' }),
   fetchOfferAction: () => ({ type: 'fetchOffer' }),
   fetchNearbyOffersAction: () => ({ type: 'fetchNearby' }),
   fetchCommentsAction: () => ({ type: 'fetchComments' })

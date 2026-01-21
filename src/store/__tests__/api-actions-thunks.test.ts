@@ -95,7 +95,6 @@ describe('api-actions thunks', () => {
       setOffersLoading(true),
       setOffersLoadError(false),
       loadOffers([offer]),
-      setFavorites([offer]),
       setOffersLoading(false)
     ]);
   });
@@ -349,7 +348,8 @@ describe('api-actions thunks', () => {
 
     expect(actions).toEqual([
       setAuthStatus(AuthorizationStatus.NoAuth),
-      setUser(null)
+      setUser(null),
+      setFavorites([])
     ]);
   });
 });
