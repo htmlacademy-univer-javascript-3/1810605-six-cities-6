@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import MainPage from '../../pages/main-page/main-page';
@@ -9,17 +10,21 @@ import PrivateRoute from '../private-route/private-route';
 import Spinner from '../spinner/spinner';
 import ErrorMessage from '../error-message/error-message';
 import { Review } from '../../types';
-import { RootState } from '../../store';
-import { fetchOffersAction } from '../../store/api-actions';
+import { RootState, AppDispatch } from '../../store';
+import { fetchOffersAction, checkAuthAction } from '../../store/api-actions';
 
 interface AppProps {
   reviews: Review[];
 }
 
 function App({ reviews }: AppProps): JSX.Element {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const isOffersLoading = useSelector((state: RootState) => state.isOffersLoading);
   const isOffersLoadError = useSelector((state: RootState) => state.isOffersLoadError);
+
+  useEffect(() => {
+    dispatch(checkAuthAction());
+  }, [dispatch]);
 
   if (isOffersLoading) {
     return <Spinner />;
