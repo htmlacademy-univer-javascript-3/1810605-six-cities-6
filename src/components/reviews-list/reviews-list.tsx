@@ -8,7 +8,8 @@ interface ReviewsListProps {
 const MAX_REVIEWS_COUNT = 10;
 
 function ReviewsList({ reviews }: ReviewsListProps): JSX.Element {
-  const sortedReviews = [...reviews]
+  const safeReviews = Array.isArray(reviews) ? reviews : [];
+  const sortedReviews = [...safeReviews]
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, MAX_REVIEWS_COUNT);
 

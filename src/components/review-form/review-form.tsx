@@ -1,34 +1,54 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { postCommentAction } from '../../store/api-actions';
+import { RootState, AppDispatch } from '../../store';
 
-function ReviewForm(): JSX.Element {
-  const [formData, setFormData] = useState({
-    rating: 0,
-    comment: ''
-  });
+interface ReviewFormProps {
+  offerId: string;
+}
 
-  const isValid = formData.rating > 0 && formData.comment.length >= 50 && formData.comment.length <= 300;
+function ReviewForm({ offerId }: ReviewFormProps): JSX.Element {
+  const dispatch = useDispatch<AppDispatch>();
+  const isCommentPosting = useSelector((state: RootState) => state.isCommentPosting);
+  const isCommentPostError = useSelector((state: RootState) => state.isCommentPostError);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+
+  const isFormValid = rating > 0 && comment.length >= 50 && comment.length <= 300;
 
   const handleRatingChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      rating: Number(event.target.value)
-    });
+    setRating(Number(event.target.value));
   };
 
   const handleCommentChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      comment: event.target.value
-    });
+    setComment(event.target.value);
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // TODO: Implement form submission
+    if (!isFormValid || isCommentPosting) {
+      return;
+    }
+    try {
+      await dispatch(postCommentAction({
+        offerId,
+        comment,
+        rating
+      }));
+      setRating(0);
+      setComment('');
+    } catch {
+      // Error is handled via store flag
+    }
   };
 
   return (
     <form className="reviews__form form" action="#" method="post" onSubmit={handleSubmit}>
+      {isCommentPostError && (
+        <div style={{ color: 'red', marginBottom: '10px' }}>
+          Failed to submit review. Please try again.
+        </div>
+      )}
       <label className="reviews__label form__label" htmlFor="review">Your review</label>
       <div className="reviews__rating-form form__rating">
         <input
@@ -37,7 +57,8 @@ function ReviewForm(): JSX.Element {
           value="5"
           id="5-stars"
           type="radio"
-          checked={formData.rating === 5}
+          disabled={isCommentPosting}
+          checked={rating === 5}
           onChange={handleRatingChange}
         />
         <label htmlFor="5-stars" className="reviews__rating-label form__rating-label" title="perfect">
@@ -52,7 +73,8 @@ function ReviewForm(): JSX.Element {
           value="4"
           id="4-stars"
           type="radio"
-          checked={formData.rating === 4}
+          disabled={isCommentPosting}
+          checked={rating === 4}
           onChange={handleRatingChange}
         />
         <label htmlFor="4-stars" className="reviews__rating-label form__rating-label" title="good">
@@ -67,7 +89,8 @@ function ReviewForm(): JSX.Element {
           value="3"
           id="3-stars"
           type="radio"
-          checked={formData.rating === 3}
+          disabled={isCommentPosting}
+          checked={rating === 3}
           onChange={handleRatingChange}
         />
         <label htmlFor="3-stars" className="reviews__rating-label form__rating-label" title="not bad">
@@ -82,7 +105,8 @@ function ReviewForm(): JSX.Element {
           value="2"
           id="2-stars"
           type="radio"
-          checked={formData.rating === 2}
+          disabled={isCommentPosting}
+          checked={rating === 2}
           onChange={handleRatingChange}
         />
         <label htmlFor="2-stars" className="reviews__rating-label form__rating-label" title="badly">
@@ -97,7 +121,8 @@ function ReviewForm(): JSX.Element {
           value="1"
           id="1-star"
           type="radio"
-          checked={formData.rating === 1}
+          disabled={isCommentPosting}
+          checked={rating === 1}
           onChange={handleRatingChange}
         />
         <label htmlFor="1-star" className="reviews__rating-label form__rating-label" title="terribly">
@@ -111,14 +136,19 @@ function ReviewForm(): JSX.Element {
         id="review"
         name="review"
         placeholder="Tell how was your stay, what you like and what can be improved"
-        value={formData.comment}
+        disabled={isCommentPosting}
+        value={comment}
         onChange={handleCommentChange}
+        minLength={50}
+        maxLength={300}
       />
       <div className="reviews__button-wrapper">
         <p className="reviews__help">
           To submit review please make sure to set <span className="reviews__star">rating</span> and describe your stay with at least <b className="reviews__text-amount">50 characters</b>.
         </p>
-        <button className="reviews__submit form__submit button" type="submit" disabled={!isValid}>Submit</button>
+        <button className="reviews__submit form__submit button" type="submit" disabled={!isFormValid || isCommentPosting}>
+          Submit
+        </button>
       </div>
     </form>
   );

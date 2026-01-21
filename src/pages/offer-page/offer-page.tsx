@@ -1,26 +1,42 @@
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { Review } from '../../types';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Navigate, useParams } from 'react-router-dom';
+import { AuthorizationStatus } from '../../types';
 import ReviewForm from '../../components/review-form/review-form';
 import ReviewsList from '../../components/reviews-list/reviews-list';
 import Map from '../../components/map/map';
 import OfferList from '../../components/offer-list/offer-list';
-import { RootState } from '../../store';
-import NotFoundPage from '../not-found-page/not-found-page';
+import { RootState, AppDispatch } from '../../store';
 import Header from '../../components/header/header';
+import Spinner from '../../components/spinner/spinner';
+import { fetchOfferAction, fetchNearbyOffersAction, fetchCommentsAction } from '../../store/api-actions';
 
-interface OfferPageProps {
-  reviews: Review[];
-}
-
-function OfferPage({ reviews }: OfferPageProps): JSX.Element {
+function OfferPage(): JSX.Element {
   const { id } = useParams<{ id: string }>();
-  const offers = useSelector((state: RootState) => state.offers);
-  const currentOffer = offers.find((o) => o.id === id) ?? offers[0];
-  const nearbyOffers = offers.filter((o) => o.id !== currentOffer?.id).slice(0, 3);
+  const dispatch = useDispatch<AppDispatch>();
+  const currentOffer = useSelector((state: RootState) => state.offer);
+  const nearbyOffers = useSelector((state: RootState) => state.nearbyOffers);
+  const comments = useSelector((state: RootState) => state.comments);
+  const isOfferLoading = useSelector((state: RootState) => state.isOfferLoading);
+  const isOfferNotFound = useSelector((state: RootState) => state.isOfferNotFound);
+  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
 
-  if (!currentOffer) {
-    return <NotFoundPage />;
+  useEffect(() => {
+    if (id) {
+      dispatch(fetchOfferAction(id));
+      dispatch(fetchNearbyOffersAction(id));
+      dispatch(fetchCommentsAction(id));
+    }
+  }, [dispatch, id]);
+
+  if (!id) {
+    return <Navigate to="/404" />;
+  }
+  if (isOfferNotFound) {
+    return <Navigate to="/404" />;
+  }
+  if (isOfferLoading || !currentOffer) {
+    return <Spinner />;
   }
   const images = Array.isArray(currentOffer.images) ? currentOffer.images : [];
 
@@ -111,9 +127,11 @@ function OfferPage({ reviews }: OfferPageProps): JSX.Element {
                 </div>
               </div>
               <section className="offer__reviews reviews">
-                <h2 className="reviews__title">Reviews &middot; <span className="reviews__amount">{reviews.length}</span></h2>
-                <ReviewsList reviews={reviews} />
-                <ReviewForm />
+                <h2 className="reviews__title">Reviews &middot; <span className="reviews__amount">{comments.length}</span></h2>
+                <ReviewsList reviews={comments} />
+                {authorizationStatus === AuthorizationStatus.Auth && currentOffer && (
+                  <ReviewForm offerId={currentOffer.id} />
+                )}
               </section>
             </div>
           </div>

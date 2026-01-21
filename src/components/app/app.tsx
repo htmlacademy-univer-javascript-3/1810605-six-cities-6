@@ -9,15 +9,10 @@ import NotFoundPage from '../../pages/not-found-page/not-found-page';
 import PrivateRoute from '../private-route/private-route';
 import Spinner from '../spinner/spinner';
 import ErrorMessage from '../error-message/error-message';
-import { Review } from '../../types';
 import { RootState, AppDispatch } from '../../store';
 import { fetchOffersAction, checkAuthAction } from '../../store/api-actions';
 
-interface AppProps {
-  reviews: Review[];
-}
-
-function App({ reviews }: AppProps): JSX.Element {
+function App(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const isOffersLoading = useSelector((state: RootState) => state.isOffersLoading);
   const isOffersLoadError = useSelector((state: RootState) => state.isOffersLoadError);
@@ -46,7 +41,7 @@ function App({ reviews }: AppProps): JSX.Element {
             </PrivateRoute>
           }
         />
-        <Route path="/offer/:id" element={<OfferPage reviews={reviews} />} />
+        <Route path="/offer/:id" element={<OfferPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
