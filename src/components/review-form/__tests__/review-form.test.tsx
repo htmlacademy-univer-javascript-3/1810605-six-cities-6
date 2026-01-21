@@ -8,6 +8,7 @@ import offersReducer, { DEFAULT_CITY } from '../../../store/slices/offers-slice'
 import userReducer from '../../../store/slices/user-slice';
 import offerReducer from '../../../store/slices/offer-slice';
 import favoritesReducer from '../../../store/slices/favorites-slice';
+import { AuthorizationStatus } from '../../../types';
 
 vi.mock('../../../store/api-actions', () => ({
   postCommentAction: (payload: { offerId: string; comment: string; rating: number }) => ({
@@ -34,7 +35,7 @@ const makeStore = () =>
         activeOfferId: null
       },
       user: {
-        authorizationStatus: 'NO_AUTH',
+        authorizationStatus: AuthorizationStatus.NoAuth,
         user: null
       },
       offer: {
