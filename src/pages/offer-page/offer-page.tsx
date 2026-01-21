@@ -1,5 +1,5 @@
 import { useParams, Link, Navigate } from 'react-router-dom';
-import { Offer, Review } from '../../types';
+import { Review } from '../../types';
 import { offers as mockOffers } from '../../mocks/offers';
 import ReviewForm from '../../components/review-form/review-form';
 import ReviewsList from '../../components/reviews-list/reviews-list';
@@ -7,7 +7,6 @@ import Map from '../../components/map/map';
 import OfferList from '../../components/offer-list/offer-list';
 
 interface OfferPageProps {
-  offers: Offer[];
   reviews: Review[];
 }
 

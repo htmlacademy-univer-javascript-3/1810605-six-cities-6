@@ -16,7 +16,7 @@ function App({ offers, reviews }: AppProps): JSX.Element {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<MainPage offers={offers} />} />
+        <Route path="/" element={<MainPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route
           path="/favorites"
@@ -26,7 +26,7 @@ function App({ offers, reviews }: AppProps): JSX.Element {
             </PrivateRoute>
           }
         />
-        <Route path="/offer/:id" element={<OfferPage offers={offers} reviews={reviews} />} />
+        <Route path="/offer/:id" element={<OfferPage reviews={reviews} />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

@@ -30,7 +30,19 @@ function useMap(
       setMap(instance);
       isRenderedRef.current = true;
     }
-  }, [mapRef, city]);
+  }, [mapRef]);
+
+  useEffect(() => {
+    if (map) {
+      map.setView(
+        {
+          lat: city.location.latitude,
+          lng: city.location.longitude
+        },
+        map.getZoom()
+      );
+    }
+  }, [map, city]);
 
   return map;
 }

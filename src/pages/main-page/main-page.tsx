@@ -1,14 +1,45 @@
 import { useState } from 'react';
-import { Offer } from '../../types';
+import { useDispatch, useSelector } from 'react-redux';
+import { City, Offer } from '../../types';
 import OfferList from '../../components/offer-list/offer-list';
 import Map from '../../components/map/map';
+import CitiesList from '../../components/cities-list/cities-list';
+import { changeCity } from '../../store/action';
+import { RootState } from '../../store';
 
-interface MainPageProps {
-  offers: Offer[];
-}
+const cities: City[] = [
+  {
+    name: 'Paris',
+    location: { latitude: 48.85661, longitude: 2.351499 }
+  },
+  {
+    name: 'Cologne',
+    location: { latitude: 50.938361, longitude: 6.959974 }
+  },
+  {
+    name: 'Brussels',
+    location: { latitude: 50.846557, longitude: 4.351697 }
+  },
+  {
+    name: 'Amsterdam',
+    location: { latitude: 52.37454, longitude: 4.897976 }
+  },
+  {
+    name: 'Hamburg',
+    location: { latitude: 53.550341, longitude: 10.000654 }
+  },
+  {
+    name: 'Dusseldorf',
+    location: { latitude: 51.225402, longitude: 6.776314 }
+  }
+];
 
-function MainPage({ offers }: MainPageProps): JSX.Element {
-  const placesCount = offers.length;
+function MainPage(): JSX.Element {
+  const dispatch = useDispatch();
+  const selectedCity = useSelector((state: RootState) => state.city);
+  const offers = useSelector((state: RootState) => state.offers);
+  const filteredOffers = offers.filter((offer) => offer.city.name === selectedCity.name);
+  const placesCount = filteredOffers.length;
   const [isSortingOpen, setIsSortingOpen] = useState(false);
   const [selectedOffer, setSelectedOffer] = useState<Offer | undefined>(undefined);
 
@@ -18,6 +49,11 @@ function MainPage({ offers }: MainPageProps): JSX.Element {
 
   const handleSortingOptionClick = () => {
     setIsSortingOpen(false);
+  };
+
+  const handleCityChange = (city: City) => {
+    dispatch(changeCity(city));
+    setSelectedOffer(undefined);
   };
 
   return (
@@ -55,45 +91,18 @@ function MainPage({ offers }: MainPageProps): JSX.Element {
         <h1 className="visually-hidden">Cities</h1>
         <div className="tabs">
           <section className="locations container">
-            <ul className="locations__list tabs__list">
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item" href="#">
-                  <span>Paris</span>
-                </a>
-              </li>
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item" href="#">
-                  <span>Cologne</span>
-                </a>
-              </li>
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item" href="#">
-                  <span>Brussels</span>
-                </a>
-              </li>
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item tabs__item--active">
-                  <span>Amsterdam</span>
-                </a>
-              </li>
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item" href="#">
-                  <span>Hamburg</span>
-                </a>
-              </li>
-              <li className="locations__item">
-                <a className="locations__item-link tabs__item" href="#">
-                  <span>Dusseldorf</span>
-                </a>
-              </li>
-            </ul>
+            <CitiesList
+              cities={cities}
+              selectedCity={selectedCity}
+              onCityChange={handleCityChange}
+            />
           </section>
         </div>
         <div className="cities">
           <div className="cities__places-container container">
             <section className="cities__places places">
               <h2 className="visually-hidden">Places</h2>
-              <b className="places__found">{placesCount} places to stay in Amsterdam</b>
+              <b className="places__found">{placesCount} places to stay in {selectedCity.name}</b>
               <form className="places__sorting" action="#" method="get">
                 <span className="places__sorting-caption">Sort by </span>
                 <span
@@ -137,10 +146,14 @@ function MainPage({ offers }: MainPageProps): JSX.Element {
                   </li>
                 </ul>
               </form>
-              <OfferList offers={offers} onOfferHover={setSelectedOffer} />
+              <OfferList offers={filteredOffers} onOfferHover={setSelectedOffer} />
             </section>
             <div className="cities__right-section">
-              <Map city={offers[0].city} offers={offers} selectedOffer={selectedOffer} />
+              <Map
+                city={selectedCity}
+                points={filteredOffers}
+                selectedPointId={selectedOffer?.id}
+              />
             </div>
           </div>
         </div>
