@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Offer } from '../../types';
 
@@ -9,13 +10,13 @@ interface OfferCardProps {
   variant?: 'cities' | 'near-places';
 }
 
-function OfferCard({
+const OfferCard = memo(({
   offer,
   onMouseEnter,
   onMouseLeave,
   className,
   variant = 'cities'
-}: OfferCardProps): JSX.Element {
+}: OfferCardProps): JSX.Element => {
   const isNearPlaces = variant === 'near-places';
 
   return (
@@ -69,6 +70,7 @@ function OfferCard({
       </div>
     </article>
   );
-}
+});
+OfferCard.displayName = 'OfferCard';
 
 export default OfferCard;

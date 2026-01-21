@@ -9,13 +9,14 @@ import NotFoundPage from '../../pages/not-found-page/not-found-page';
 import PrivateRoute from '../private-route/private-route';
 import Spinner from '../spinner/spinner';
 import ErrorMessage from '../error-message/error-message';
-import { RootState, AppDispatch } from '../../store';
+import { AppDispatch } from '../../store';
 import { fetchOffersAction, checkAuthAction } from '../../store/api-actions';
+import { selectIsOffersLoadError, selectIsOffersLoading } from '../../store/selectors';
 
 function App(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
-  const isOffersLoading = useSelector((state: RootState) => state.isOffersLoading);
-  const isOffersLoadError = useSelector((state: RootState) => state.isOffersLoadError);
+  const isOffersLoading = useSelector(selectIsOffersLoading);
+  const isOffersLoadError = useSelector(selectIsOffersLoadError);
 
   useEffect(() => {
     dispatch(checkAuthAction());

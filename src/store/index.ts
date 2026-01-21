@@ -1,11 +1,21 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { createAPI } from '../services/api';
-import { reducer } from './reducer';
+import offersReducer from './slices/offers-slice';
+import userReducer from './slices/user-slice';
+import offerReducer from './slices/offer-slice';
+import favoritesReducer from './slices/favorites-slice';
 
 const api = createAPI();
 
+const rootReducer = combineReducers({
+  offers: offersReducer,
+  user: userReducer,
+  offer: offerReducer,
+  favorites: favoritesReducer
+});
+
 export const store = configureStore({
-  reducer,
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       thunk: {

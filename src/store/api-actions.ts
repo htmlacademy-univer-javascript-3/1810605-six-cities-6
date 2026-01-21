@@ -1,13 +1,9 @@
 import { ThunkAction } from '@reduxjs/toolkit';
-import { AxiosInstance } from 'axios';
+import axios, { AxiosInstance } from 'axios';
+import { Action } from 'redux';
 import { Offer, UserData, AuthorizationStatus, Review } from '../types';
+import { loadOffers, setOffersLoadError, setOffersLoading } from './slices/offers-slice';
 import {
-  Action,
-  loadOffers,
-  setOffersLoadError,
-  setOffersLoading,
-  setAuthStatus,
-  setUser,
   setOffer,
   setOfferLoading,
   setOfferNotFound,
@@ -17,16 +13,13 @@ import {
   setCommentsLoading,
   setCommentPosting,
   setCommentPostError
-} from './action';
+} from './slices/offer-slice';
+import { setAuthStatus, setUser } from './slices/user-slice';
+import { setFavorites } from './slices/favorites-slice';
 import { RootState } from './index';
 import { saveToken, dropToken } from '../services/token';
 
-export type AppThunk<ReturnType = void> = ThunkAction<
-  ReturnType,
-  RootState,
-  AxiosInstance,
-  Action
->;
+export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, RootState, AxiosInstance, Action>;
 
 const normalizeOffer = (offer: Offer): Offer => {
   const images = Array.isArray(offer.images) ? offer.images : [];
@@ -52,7 +45,9 @@ export const fetchOffersAction = (): AppThunk => async (dispatch, _getState, api
   dispatch(setOffersLoadError(false));
   try {
     const { data } = await api.get<Offer[]>('/offers');
-    dispatch(loadOffers(data.map(normalizeOffer)));
+    const normalized = data.map(normalizeOffer);
+    dispatch(loadOffers(normalized));
+    dispatch(setFavorites(normalized.filter((offer) => offer.isFavorite)));
   } catch (error) {
     dispatch(setOffersLoadError(true));
   } finally {
@@ -67,8 +62,7 @@ export const fetchOfferAction = (offerId: string): AppThunk => async (dispatch, 
     const { data } = await api.get<Offer>(`/offers/${offerId}`);
     dispatch(setOffer(normalizeOffer(data)));
   } catch (error) {
-    const status = (error as { response?: { status?: number } })?.response?.status;
-    if (status === 404) {
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
       dispatch(setOfferNotFound(true));
     }
     dispatch(setOffer(null));

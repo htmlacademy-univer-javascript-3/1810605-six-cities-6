@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { City, Offer } from '../../types';
 import OfferList from '../../components/offer-list/offer-list';
@@ -5,8 +6,16 @@ import Map from '../../components/map/map';
 import CitiesList from '../../components/cities-list/cities-list';
 import SortingOptions from '../../components/sorting-options/sorting-options';
 import Header from '../../components/header/header';
-import { changeCity, changeSortType, setActiveOfferId } from '../../store/action';
-import { RootState } from '../../store';
+import { changeCity, changeSortType, setActiveOfferId } from '../../store/slices/offers-slice';
+import {
+  selectActiveOfferId,
+  selectCity,
+  selectIsOffersLoadError,
+  selectIsOffersLoading,
+  selectOffers,
+  selectSortType,
+  selectSortedOffers
+} from '../../store/selectors';
 
 const cities: City[] = [
   {
@@ -37,40 +46,27 @@ const cities: City[] = [
 
 function MainPage(): JSX.Element {
   const dispatch = useDispatch();
-  const selectedCity = useSelector((state: RootState) => state.city);
-  const offers = useSelector((state: RootState) => state.offers);
-  const sortType = useSelector((state: RootState) => state.sortType);
-  const activeOfferId = useSelector((state: RootState) => state.activeOfferId);
-  const filteredOffers = offers.filter((offer) => offer.city.name === selectedCity.name);
-  const sortedOffers = (() => {
-    switch (sortType) {
-      case 'Price: low to high':
-        return [...filteredOffers].sort((a, b) => a.price - b.price);
-      case 'Price: high to low':
-        return [...filteredOffers].sort((a, b) => b.price - a.price);
-      case 'Top rated first':
-        return [...filteredOffers].sort((a, b) => b.rating - a.rating);
-      case 'Popular':
-      default:
-        return filteredOffers;
-    }
-  })();
+  const selectedCity = useSelector(selectCity);
+  const offers = useSelector(selectOffers);
+  const sortType = useSelector(selectSortType);
+  const activeOfferId = useSelector(selectActiveOfferId);
+  const sortedOffers = useSelector(selectSortedOffers);
   const placesCount = sortedOffers.length;
   const isDev = import.meta.env.DEV;
-  const isOffersLoading = useSelector((state: RootState) => state.isOffersLoading);
-  const isOffersLoadError = useSelector((state: RootState) => state.isOffersLoadError);
+  const isOffersLoading = useSelector(selectIsOffersLoading);
+  const isOffersLoadError = useSelector(selectIsOffersLoadError);
 
-  const handleCityChange = (city: City) => {
+  const handleCityChange = useCallback((city: City) => {
     dispatch(changeCity(city));
-  };
+  }, [dispatch]);
 
-  const handleSortTypeChange = (nextSortType: Parameters<typeof changeSortType>[0]) => {
+  const handleSortTypeChange = useCallback((nextSortType: Parameters<typeof changeSortType>[0]) => {
     dispatch(changeSortType(nextSortType));
-  };
+  }, [dispatch]);
 
-  const handleOfferHover = (offer: Offer | undefined) => {
+  const handleOfferHover = useCallback((offer: Offer | undefined) => {
     dispatch(setActiveOfferId(offer?.id ?? null));
-  };
+  }, [dispatch]);
 
   return (
     <div className="page page--gray page--main">

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Review } from '../../types';
 import ReviewItem from '../review-item/review-item';
 
@@ -8,10 +9,12 @@ interface ReviewsListProps {
 const MAX_REVIEWS_COUNT = 10;
 
 function ReviewsList({ reviews }: ReviewsListProps): JSX.Element {
-  const safeReviews = Array.isArray(reviews) ? reviews : [];
-  const sortedReviews = [...safeReviews]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, MAX_REVIEWS_COUNT);
+  const sortedReviews = useMemo(() => {
+    const safeReviews = Array.isArray(reviews) ? reviews : [];
+    return [...safeReviews]
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, MAX_REVIEWS_COUNT);
+  }, [reviews]);
 
   return (
     <ul className="reviews__list">

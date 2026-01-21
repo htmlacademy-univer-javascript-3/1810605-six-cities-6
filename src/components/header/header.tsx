@@ -1,19 +1,21 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '../../store';
+import { AppDispatch } from '../../store';
 import { AuthorizationStatus } from '../../types';
 import { logoutAction } from '../../store/api-actions';
+import { selectAuthorizationStatus, selectFavoriteOffers, selectUser } from '../../store/selectors';
 
 interface HeaderProps {
   isLogoActive?: boolean;
 }
 
-function Header({ isLogoActive = false }: HeaderProps): JSX.Element {
+const Header = memo(({ isLogoActive = false }: HeaderProps): JSX.Element => {
   const dispatch = useDispatch<AppDispatch>();
-  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
-  const user = useSelector((state: RootState) => state.user);
-  const offers = useSelector((state: RootState) => state.offers);
-  const favoriteCount = offers.filter((offer) => offer.isFavorite).length;
+  const authorizationStatus = useSelector(selectAuthorizationStatus);
+  const user = useSelector(selectUser);
+  const favoriteOffers = useSelector(selectFavoriteOffers);
+  const favoriteCount = favoriteOffers.length;
 
   return (
     <header className="header">
@@ -60,6 +62,7 @@ function Header({ isLogoActive = false }: HeaderProps): JSX.Element {
       </div>
     </header>
   );
-}
+});
+Header.displayName = 'Header';
 
 export default Header;
