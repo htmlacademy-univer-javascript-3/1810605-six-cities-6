@@ -46,3 +46,16 @@ export type Review = {
   rating: number;
   user: User;
 };
+
+export enum AuthorizationStatus {
+  Auth = 'AUTH',
+  NoAuth = 'NO_AUTH',
+  Unknown = 'UNKNOWN'
+}
+
+export type UserData = {
+  email: string;
+  token: string;
+  avatarUrl: string;
+  isPro: boolean;
+};

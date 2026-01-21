@@ -1,4 +1,4 @@
-import { City, Offer } from '../types';
+import { City, Offer, AuthorizationStatus, UserData } from '../types';
 import { Action, ActionType, SortType } from './action';
 
 export type State = {
@@ -8,6 +8,8 @@ export type State = {
   isOffersLoadError: boolean;
   sortType: SortType;
   activeOfferId: string | null;
+  authorizationStatus: AuthorizationStatus;
+  user: UserData | null;
 };
 
 export const DEFAULT_CITY: City = {
@@ -24,7 +26,9 @@ export const initialState: State = {
   isOffersLoading: false,
   isOffersLoadError: false,
   sortType: 'Popular',
-  activeOfferId: null
+  activeOfferId: null,
+  authorizationStatus: AuthorizationStatus.Unknown,
+  user: null
 };
 
 export const reducer = (state: State = initialState, action: Action): State => {
@@ -41,6 +45,10 @@ export const reducer = (state: State = initialState, action: Action): State => {
       return { ...state, sortType: action.payload };
     case ActionType.SetActiveOfferId:
       return { ...state, activeOfferId: action.payload };
+    case ActionType.SetAuthStatus:
+      return { ...state, authorizationStatus: action.payload };
+    case ActionType.SetUser:
+      return { ...state, user: action.payload };
     default:
       return state;
   }

@@ -1,4 +1,4 @@
-import { City, Offer } from '../types';
+import { City, Offer, AuthorizationStatus, UserData } from '../types';
 
 export type SortType =
   | 'Popular'
@@ -12,7 +12,9 @@ export const ActionType = {
   SetOffersLoading: 'offers/loading',
   SetOffersLoadError: 'offers/load-error',
   ChangeSortType: 'sort/change',
-  SetActiveOfferId: 'offer/active'
+  SetActiveOfferId: 'offer/active',
+  SetAuthStatus: 'auth/status',
+  SetUser: 'auth/user'
 } as const;
 
 export const changeCity = (city: City) => ({
@@ -45,10 +47,22 @@ export const setActiveOfferId = (offerId: string | null) => ({
   payload: offerId
 } as const);
 
+export const setAuthStatus = (status: AuthorizationStatus) => ({
+  type: ActionType.SetAuthStatus,
+  payload: status
+} as const);
+
+export const setUser = (user: UserData | null) => ({
+  type: ActionType.SetUser,
+  payload: user
+} as const);
+
 export type Action =
   | ReturnType<typeof changeCity>
   | ReturnType<typeof loadOffers>
   | ReturnType<typeof setOffersLoading>
   | ReturnType<typeof setOffersLoadError>
   | ReturnType<typeof changeSortType>
-  | ReturnType<typeof setActiveOfferId>;
+  | ReturnType<typeof setActiveOfferId>
+  | ReturnType<typeof setAuthStatus>
+  | ReturnType<typeof setUser>;
