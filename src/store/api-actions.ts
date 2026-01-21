@@ -47,12 +47,16 @@ export const fetchOffersAction = (): AppThunk => async (dispatch, _getState, api
     const { data } = await api.get<Offer[]>('/offers');
     const normalized = data.map(normalizeOffer);
     dispatch(loadOffers(normalized));
-    dispatch(setFavorites(normalized.filter((offer) => offer.isFavorite)));
   } catch (error) {
     dispatch(setOffersLoadError(true));
   } finally {
     dispatch(setOffersLoading(false));
   }
+};
+
+export const fetchFavoritesAction = (): AppThunk => async (dispatch, _getState, api) => {
+  const { data } = await api.get<Offer[]>('/favorite');
+  dispatch(setFavorites(data.map(normalizeOffer)));
 };
 
 export const fetchOfferAction = (offerId: string): AppThunk => async (dispatch, _getState, api) => {
@@ -143,5 +147,6 @@ export const logoutAction = (): AppThunk => async (dispatch, _getState, api) => 
     dropToken();
     dispatch(setAuthStatus(AuthorizationStatus.NoAuth));
     dispatch(setUser(null));
+    dispatch(setFavorites([]));
   }
 };

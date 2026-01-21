@@ -10,17 +10,25 @@ import PrivateRoute from '../private-route/private-route';
 import Spinner from '../spinner/spinner';
 import ErrorMessage from '../error-message/error-message';
 import { AppDispatch } from '../../store';
-import { fetchOffersAction, checkAuthAction } from '../../store/api-actions';
-import { selectIsOffersLoadError, selectIsOffersLoading } from '../../store/selectors';
+import { fetchOffersAction, checkAuthAction, fetchFavoritesAction } from '../../store/api-actions';
+import { selectAuthorizationStatus, selectIsOffersLoadError, selectIsOffersLoading } from '../../store/selectors';
+import { AuthorizationStatus } from '../../types';
 
 function App(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const isOffersLoading = useSelector(selectIsOffersLoading);
   const isOffersLoadError = useSelector(selectIsOffersLoadError);
+  const authorizationStatus = useSelector(selectAuthorizationStatus);
 
   useEffect(() => {
     dispatch(checkAuthAction());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (authorizationStatus === AuthorizationStatus.Auth) {
+      dispatch(fetchFavoritesAction());
+    }
+  }, [authorizationStatus, dispatch]);
 
   if (isOffersLoading) {
     return <Spinner />;
