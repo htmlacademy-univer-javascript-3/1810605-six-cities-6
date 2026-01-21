@@ -6,20 +6,28 @@ import ReviewForm from '../../components/review-form/review-form';
 import ReviewsList from '../../components/reviews-list/reviews-list';
 import Map from '../../components/map/map';
 import OfferList from '../../components/offer-list/offer-list';
-import { RootState, AppDispatch } from '../../store';
+import { AppDispatch } from '../../store';
 import Header from '../../components/header/header';
 import Spinner from '../../components/spinner/spinner';
 import { fetchOfferAction, fetchNearbyOffersAction, fetchCommentsAction } from '../../store/api-actions';
+import {
+  selectOffer,
+  selectNearbyOffers,
+  selectComments,
+  selectIsOfferLoading,
+  selectIsOfferNotFound,
+  selectAuthorizationStatus
+} from '../../store/selectors';
 
 function OfferPage(): JSX.Element {
   const { id } = useParams<{ id: string }>();
   const dispatch = useDispatch<AppDispatch>();
-  const currentOffer = useSelector((state: RootState) => state.offer);
-  const nearbyOffers = useSelector((state: RootState) => state.nearbyOffers);
-  const comments = useSelector((state: RootState) => state.comments);
-  const isOfferLoading = useSelector((state: RootState) => state.isOfferLoading);
-  const isOfferNotFound = useSelector((state: RootState) => state.isOfferNotFound);
-  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
+  const currentOffer = useSelector(selectOffer);
+  const nearbyOffers = useSelector(selectNearbyOffers);
+  const comments = useSelector(selectComments);
+  const isOfferLoading = useSelector(selectIsOfferLoading);
+  const isOfferNotFound = useSelector(selectIsOfferNotFound);
+  const authorizationStatus = useSelector(selectAuthorizationStatus);
 
   useEffect(() => {
     if (id) {

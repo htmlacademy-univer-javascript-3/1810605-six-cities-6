@@ -1,7 +1,8 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { postCommentAction } from '../../store/api-actions';
-import { RootState, AppDispatch } from '../../store';
+import { AppDispatch } from '../../store';
+import { selectIsCommentPostError, selectIsCommentPosting } from '../../store/selectors';
 
 interface ReviewFormProps {
   offerId: string;
@@ -9,8 +10,8 @@ interface ReviewFormProps {
 
 function ReviewForm({ offerId }: ReviewFormProps): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
-  const isCommentPosting = useSelector((state: RootState) => state.isCommentPosting);
-  const isCommentPostError = useSelector((state: RootState) => state.isCommentPostError);
+  const isCommentPosting = useSelector(selectIsCommentPosting);
+  const isCommentPostError = useSelector(selectIsCommentPostError);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
 
@@ -24,22 +25,25 @@ function ReviewForm({ offerId }: ReviewFormProps): JSX.Element {
     setComment(event.target.value);
   };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!isFormValid || isCommentPosting) {
       return;
     }
-    try {
-      await dispatch(postCommentAction({
+    void Promise.resolve(
+      dispatch(postCommentAction({
         offerId,
         comment,
         rating
-      }));
-      setRating(0);
-      setComment('');
-    } catch {
-      // Error is handled via store flag
-    }
+      }))
+    )
+      .then(() => {
+        setRating(0);
+        setComment('');
+      })
+      .catch(() => {
+        // Error is handled via store flag
+      });
   };
 
   return (

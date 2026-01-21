@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { Icon, Marker, layerGroup } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { City, Location, Offer } from '../../types';
@@ -31,7 +31,7 @@ interface MapProps {
   className?: string;
 }
 
-function Map({
+const Map = memo(({
   city,
   points,
   offers,
@@ -39,7 +39,7 @@ function Map({
   activePointId,
   selectedOffer,
   className
-}: MapProps): JSX.Element {
+}: MapProps): JSX.Element => {
   const mapRef = useRef(null);
   const map = useMap(mapRef, city);
 
@@ -82,6 +82,7 @@ function Map({
       <div style={{ height: '100%' }} ref={mapRef}></div>
     </section>
   );
-}
+});
+Map.displayName = 'Map';
 
 export default Map;

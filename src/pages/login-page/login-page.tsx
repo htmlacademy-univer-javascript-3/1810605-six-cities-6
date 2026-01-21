@@ -2,8 +2,9 @@ import { useState, FormEvent, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { loginAction } from '../../store/api-actions';
-import { RootState, AppDispatch } from '../../store';
+import { AppDispatch } from '../../store';
 import { AuthorizationStatus } from '../../types';
+import { selectAuthorizationStatus } from '../../store/selectors';
 import Header from '../../components/header/header';
 
 const validatePassword = (password: string): boolean => {
@@ -15,7 +16,7 @@ const validatePassword = (password: string): boolean => {
 function LoginPage(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const authorizationStatus = useSelector((state: RootState) => state.authorizationStatus);
+  const authorizationStatus = useSelector(selectAuthorizationStatus);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');

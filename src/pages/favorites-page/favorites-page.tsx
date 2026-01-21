@@ -1,22 +1,25 @@
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Offer } from '../../types';
-import { RootState } from '../../store';
+import { selectFavoriteOffers } from '../../store/selectors';
 import Header from '../../components/header/header';
 
 function FavoritesPage(): JSX.Element {
-  const offers = useSelector((state: RootState) => state.offers);
-  const favoriteOffers = offers.filter((offer) => offer.isFavorite);
+  const favoriteOffers = useSelector(selectFavoriteOffers);
 
   // Группируем по городам
-  const offersByCity = favoriteOffers.reduce<Record<string, Offer[]>>((acc, offer) => {
-    const cityName = offer.city.name;
-    if (!acc[cityName]) {
-      acc[cityName] = [];
-    }
-    acc[cityName].push(offer);
-    return acc;
-  }, {});
+  const offersByCity = useMemo(
+    () => favoriteOffers.reduce<Record<string, Offer[]>>((acc, offer) => {
+      const cityName = offer.city.name;
+      if (!acc[cityName]) {
+        acc[cityName] = [];
+      }
+      acc[cityName].push(offer);
+      return acc;
+    }, {}),
+    [favoriteOffers]
+  );
 
   return (
     <div className="page">

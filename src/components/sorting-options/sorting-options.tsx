@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { SortType } from '../../store/action';
+import { SortType } from '../../store/selectors';
 
 interface SortingOptionsProps {
   sortType: SortType;
